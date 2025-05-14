@@ -4,6 +4,7 @@ import com.example.week6.entity.Board;
 import com.example.week6.entity.Comment;
 import com.example.week6.repository.BoardRepository;
 import com.example.week6.repository.CommentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,5 +48,21 @@ public class CommentService {
                 comment.getContent(),
                 comment.getWriter()
         );
+    }
+
+    // 댓글 수정
+    @Transactional
+    public CommentDto updateComment(Long commentId, CommentDto commentDto) {
+
+        // 1. 댓글 존재 여부 확인
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+        // 2. 댓글 내용 수정
+        comment.setContent(commentDto.getContent());
+        comment.setWriter(commentDto.getWriter());
+
+        // 3. DTO로 변환하여 반환
+        return new CommentDto(comment);
     }
 }

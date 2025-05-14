@@ -49,4 +49,21 @@ public class CommentController {
             ));
         }
     }
+
+    // 댓글 수정
+    @PutMapping("/update")
+    public ResponseEntity<?> updateComment(@RequestParam Long commentId, @RequestBody CommentDto commentDto) {
+        try {
+            CommentDto updatedComment = commentService.updateComment(commentId, commentDto);
+            return ResponseEntity.ok("댓글이 성공적으로 수정되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("status", "error", "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", "error",
+                    "message", "댓글 수정 중 서버 오류가 발생했습니다.",
+                    "errorDetail", e.getMessage()
+            ));
+        }
+    }
 }
