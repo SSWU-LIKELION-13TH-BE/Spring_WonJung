@@ -2,13 +2,11 @@ package com.example.week6.service;
 import com.example.week6.dto.CommentDto;
 import com.example.week6.entity.Board;
 import com.example.week6.entity.Comment;
-import com.example.week6.entity.Member;
 import com.example.week6.repository.BoardRepository;
 import com.example.week6.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 
 @Slf4j
@@ -34,5 +32,20 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
+    }
+
+    // 댓글 조회 (DTO 변환)
+    public CommentDto readComment(Long commentId) {
+        Comment comment = commentRepository.findByCommentId(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+        // DTO로 변환하여 반환
+        return new CommentDto(
+                comment.getCommentId(),
+                comment.getBoard().getBoardId(),
+                comment.getBoard().getTitle(), // Lazy Loading 문제 방지
+                comment.getContent(),
+                comment.getWriter()
+        );
     }
 }
