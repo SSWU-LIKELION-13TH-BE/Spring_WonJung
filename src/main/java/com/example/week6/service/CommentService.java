@@ -65,4 +65,15 @@ public class CommentService {
         // 3. DTO로 변환하여 반환
         return new CommentDto(comment);
     }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(Long commentId) {
+        // 1. 댓글 존재 여부 확인
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+        // 2. 댓글 삭제
+        commentRepository.delete(comment);
+    }
 }
