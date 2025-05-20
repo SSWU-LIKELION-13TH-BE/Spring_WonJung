@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -68,6 +69,21 @@ public class BoardController {
         } catch (Exception e) {
             log.error("파일 업로드 실패 : " + e);
             return ResponseEntity.status(400).build();
+        }
+    }
+
+    //이미지 조회
+    @GetMapping("/{boardId}/image")
+    public ResponseEntity<?> getImage(@PathVariable(name="boardId") Long boardId) {
+        try{
+            String imageUrl = boardService.getImageUrl(boardId);
+            return ResponseEntity.ok(Map.of("status", "success", "imageUrl", imageUrl));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(Map.of("status", "error", "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", "error", "message", "이미지 조회 중 서버 에러가 발생하였습니다."));
         }
     }
 }

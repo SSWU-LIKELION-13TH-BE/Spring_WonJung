@@ -73,4 +73,14 @@ public class BoardService {
 
     }
 
+    // boardId를 통해 이미지 조회
+    @Transactional
+    public String getImageUrl(Long boardId) throws IOException {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+
+        String fileName = board.getImage();
+       return s3Service.getImageUrl(fileName);
+    }
+
 }
