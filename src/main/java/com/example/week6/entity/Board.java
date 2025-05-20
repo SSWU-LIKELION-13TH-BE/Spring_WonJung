@@ -32,6 +32,10 @@ public class Board {
 
     private LocalDate postDate;
 
+    // image Url 저장
+    @Column
+    private String image;
+
     @PrePersist // jpa의 롤백 메서드 엔티티가 처음 저장되기 직전에 실행
     // 새로운 row 생성 시 현재 날짜 지정
     protected void onCreate() {

@@ -4,10 +4,13 @@ import com.example.week6.dto.BoardDTO;
 import com.example.week6.entity.Board;
 import com.example.week6.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
@@ -41,8 +44,30 @@ public class BoardController {
     }
 
     // 게시글 삭제하기
+    // PathVariable : null 값 X
     @DeleteMapping("/deleteBoard/{boardId}")
     public void deleteBoard(@PathVariable(name="boardId") Long boardId) {
         boardService.deleteBoard(boardId);
+    }
+
+
+    // 이미지 업로드
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@ModelAttribute BoardDTO boardDTO) {
+        try {
+            BoardDTO request = BoardDTO.builder()
+                    .title(boardDTO.getTitle())
+                    .content(boardDTO.getContent())
+                    .writer(boardDTO.getWriter())
+                    .image(boardDTO.getImage())
+                    .build();
+
+            boardService.ImageBoard(request);
+
+            return ResponseEntity.ok("파일 업로드 성공");
+        } catch (Exception e) {
+            log.error("파일 업로드 실패 : " + e);
+            return ResponseEntity.status(400).build();
+        }
     }
 }
