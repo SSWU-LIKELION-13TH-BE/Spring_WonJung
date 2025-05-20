@@ -105,4 +105,18 @@ public class BoardController {
                     "status", 500, "message", "이미지 수정 중 서버 에러가 발생하였습니다."));
         }
     }
+
+    // 이미지 삭제
+    @DeleteMapping("/{boardId}/image")
+    public ResponseEntity<?> deleteImage(@PathVariable(name="boardId") Long boardId) {
+        try  {
+            boardService.deleteImageUrl(boardId);
+            return ResponseEntity.ok(Map.of("status", "success", "message", "이미지가 삭제되었습니다."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(Map.of("status", "error", "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", "error", "message", "이미지 삭제 중 서버 에러가 발생하였습니다."));
+        }
+    }
 }

@@ -101,4 +101,25 @@ public class BoardService {
 
         return newImageUrl;
     }
+
+    // 이미지 삭제
+    @Transactional
+    public void deleteImageUrl(Long boardId) throws IOException {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+
+
+        String imageUrl = board.getImage();
+
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            throw new IllegalArgumentException("삭제할 이미지가 존재하지 않습니다.");
+        }
+
+        // s3에서 이미지 삭제
+        s3Service.deleteImageUrl(board.getImage());
+
+        // DB 이미지 삭제
+        board.setImage(null);
+        boardRepository.save(board);
+    }
 }

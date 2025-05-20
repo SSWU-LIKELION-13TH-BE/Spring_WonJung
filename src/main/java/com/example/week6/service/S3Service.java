@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -51,6 +52,23 @@ public class S3Service {
     public String getImageUrl(String fileName) {
         GetUrlRequest request = GetUrlRequest.builder().bucket(bucket).key(fileName).build();
         return s3Client.utilities().getUrl(request).toString();
+    }
+
+    // 이미지 삭제
+    public void deleteImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty())
+            return;
+
+        // "https://bucket_name.s3.ap-northeast-2.amazonaws.com/images/imageUrl
+        // imageUrl만 추출
+        String imageKey = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest
+                .builder()
+                .bucket(bucket)
+                .key(imageKey)
+                .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
 }
