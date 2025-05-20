@@ -3,10 +3,12 @@ package com.example.week6.controller;
 import com.example.week6.dto.BoardDTO;
 import com.example.week6.entity.Board;
 import com.example.week6.service.BoardService;
+import com.example.week6.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class BoardController {
 
     private final BoardService boardService;
+    private final S3Service s3Service;
 
     // 게시글 하나 띄우기
     @GetMapping("/getBoard")
@@ -84,6 +87,22 @@ public class BoardController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
                     "status", "error", "message", "이미지 조회 중 서버 에러가 발생하였습니다."));
+        }
+    }
+
+    // 이미지 수정
+    @PatchMapping("/{boardId}/image")
+    public ResponseEntity<?> updateImage(@PathVariable(name="boardId")
+                                             Long boardId, @RequestParam("image") MultipartFile imageUrl) {
+        try{
+            String newImageUrl = boardService.updateImageUrl(boardId, imageUrl);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success", "imageUrl", newImageUrl));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(Map.of("status", "error", "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", 500, "message", "이미지 수정 중 서버 에러가 발생하였습니다."));
         }
     }
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -83,4 +84,21 @@ public class BoardService {
        return s3Service.getImageUrl(fileName);
     }
 
+    // 이미지 수정
+    @Transactional
+    public String updateImageUrl(Long boardId, MultipartFile newImage) throws IOException {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
+
+        // 새 이미지 업로드 및 객체에 저장
+        String newImageUrl = s3Service.upload(newImage);
+        board.setImage(newImageUrl);
+
+        // 기존 이미지 삭제
+        if (board.getImage() != null) {
+            s3Service.deleteImageUrl(board.getImage());
+        }
+
+        return newImageUrl;
+    }
 }
