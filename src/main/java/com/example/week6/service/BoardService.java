@@ -89,14 +89,15 @@ public class BoardService {
         Board board = boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 게시물입니다."));
 
+        // 기존 이미지 삭제
+        String oldImage = board.getImage();
+        if (oldImage != null && !oldImage.isEmpty()) {
+            s3Service.deleteImageUrl(oldImage);
+        }
+
         // 새 이미지 업로드 및 객체에 저장
         String newImageUrl = s3Service.upload(newImage);
         board.setImage(newImageUrl);
-
-        // 기존 이미지 삭제
-        if (board.getImage() != null) {
-            s3Service.deleteImageUrl(board.getImage());
-        }
 
         return newImageUrl;
     }

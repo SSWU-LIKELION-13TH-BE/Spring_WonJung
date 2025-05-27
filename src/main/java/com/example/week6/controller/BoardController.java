@@ -91,7 +91,7 @@ public class BoardController {
     }
 
     // 이미지 수정
-    @PatchMapping("/{boardId}/image")
+    @PutMapping("/{boardId}/image")
     public ResponseEntity<?> updateImage(@PathVariable(name="boardId")
                                              Long boardId, @RequestParam("image") MultipartFile imageUrl) {
         try{
