@@ -2,13 +2,12 @@ package com.example.week6.controller.user;
 
 import com.example.week6.dto.user.request.UserLoginRequestDto;
 import com.example.week6.dto.user.request.UserSignupRequestDto;
+import com.example.week6.dto.user.response.UserInfoResponseDto;
 import com.example.week6.dto.user.response.UserLoginResponseDto;
 import com.example.week6.service.user.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -35,6 +34,16 @@ public class UserController {
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto requestDto) {
         UserLoginResponseDto response = userService.login(requestDto);
         return ResponseEntity.ok(response);
+    }
+
+    // ✅ 사용자 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<?> getInfo(Authentication authentication) {
+
+        String userId = authentication.getName();
+        UserInfoResponseDto userInfo = userService.getUserInfo(userId);
+        return ResponseEntity.ok(userInfo);
+
     }
 
 }

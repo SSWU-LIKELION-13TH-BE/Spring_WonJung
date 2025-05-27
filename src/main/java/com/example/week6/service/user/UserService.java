@@ -2,6 +2,7 @@ package com.example.week6.service.user;
 
 import com.example.week6.dto.user.request.UserLoginRequestDto;
 import com.example.week6.dto.user.request.UserSignupRequestDto;
+import com.example.week6.dto.user.response.UserInfoResponseDto;
 import com.example.week6.dto.user.response.UserLoginResponseDto;
 import com.example.week6.entity.User;
 import com.example.week6.repository.UserRepository;
@@ -49,6 +50,17 @@ public class UserService implements UserDetailsService {
         }
         String token = jwtTokenProvider.createToken(user.getUserId());
         return new UserLoginResponseDto(user.getUserId(), token);
+    }
+
+    // 사용자 정보 조회
+    public UserInfoResponseDto getUserInfo(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("입력하신 Id의 사용가자 존재하지 않습니다: " + userId));
+        return new UserInfoResponseDto(
+                user.getUserId(),
+                user.getName(),
+                user.getProfileImage()
+        );
     }
 
     @Override
