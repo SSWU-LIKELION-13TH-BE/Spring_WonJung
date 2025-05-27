@@ -1,6 +1,7 @@
 package com.example.week6.service.user;
 
 import com.example.week6.dto.user.request.UserLoginRequestDto;
+import com.example.week6.dto.user.request.UserPasswordChangeRequestDto;
 import com.example.week6.dto.user.request.UserSignupRequestDto;
 import com.example.week6.dto.user.response.UserInfoResponseDto;
 import com.example.week6.dto.user.response.UserLoginResponseDto;
@@ -55,12 +56,32 @@ public class UserService implements UserDetailsService {
     // 사용자 정보 조회
     public UserInfoResponseDto getUserInfo(String userId) {
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("입력하신 Id의 사용가자 존재하지 않습니다: " + userId));
+                .orElseThrow(() -> new UsernameNotFoundException("입력하신 Id의 사용자가 존재하지 않습니다: " + userId));
         return new UserInfoResponseDto(
                 user.getUserId(),
                 user.getName(),
                 user.getProfileImage()
         );
+    }
+
+    // 비밀번호 변경
+    public void changePassword(String userId, UserPasswordChangeRequestDto requestDto) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("입력하신 Id의 사용자가 존재하지 않습니다: " + userId));
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다");
+        }
+
+        // 새 비밀번호 확인
+        if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("입력하신 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호 암호화 후 저장
+        user.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.save(user);
     }
 
     @Override
