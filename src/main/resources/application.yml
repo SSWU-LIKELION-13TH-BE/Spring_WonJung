@@ -28,7 +28,7 @@ spring:
         use_sql_comments: true
 
   jwt:
-    secret: GvF$9aL2!vRxzP3kTnUyBw#qHsE7jDpZ
+    secret: ${JWT_SECRET_KEY}
     expiration: 83400000
 
   # s3 관련설정 추가 버킷이름, 받은 access-key , secret-key 세팅 리전 ap-northest-2(서울) 로 지정
