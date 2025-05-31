@@ -57,11 +57,20 @@ public class UserController {
 
     // 비밀번호 변경
     @PatchMapping("/password")
-    public ResponseEntity<?> changePassword(Authentication authentication, @RequestBody UserPasswordChangeRequestDto requestDto) {
+//    public ResponseEntity<?> changePassword(Authentication authentication, @RequestBody UserPasswordChangeRequestDto requestDto) {
+//
+//        String userId = authentication.getName();
+//        userService.changePassword(userId, requestDto);
+//
+//        return ResponseEntity.status(200).body(Map.of("status", "success", "message", "비밀번호가 성공적으로 변경되었습니다."));
+//    }
+
+    // 응답 통일 + 예외 처리
+    public ApiResponse<?> changePassword(Authentication authentication, @Valid @RequestBody UserPasswordChangeRequestDto requestDto) {
 
         String userId = authentication.getName();
         userService.changePassword(userId, requestDto);
 
-        return ResponseEntity.status(200).body(Map.of("status", "success", "message", "비밀번호가 성공적으로 변경되었습니다."));
+        return ApiResponse.of(SuccessStatus._OK, new TestResponse("비밀번호 변경이 완료되었습니다."));
     }
 }

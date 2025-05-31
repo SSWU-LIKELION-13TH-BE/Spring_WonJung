@@ -78,12 +78,14 @@ public class UserService implements UserDetailsService {
 
         // 현재 비밀번호 확인
         if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다");
+//            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다");
+            throw new GeneralException(ErrorStatus.PASSWORD_MISMATCH);
         }
 
         // 새 비밀번호 확인
         if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
-            throw new IllegalArgumentException("입력하신 비밀번호가 일치하지 않습니다.");
+//            throw new IllegalArgumentException("입력하신 비밀번호가 일치하지 않습니다.");
+            throw new GeneralException(ErrorStatus.PASSWORD_CONFIRM_MISMATCH);
         }
 
         // 새 비밀번호 암호화 후 저장
