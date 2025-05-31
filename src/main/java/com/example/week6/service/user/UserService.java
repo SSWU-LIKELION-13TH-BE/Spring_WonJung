@@ -8,6 +8,8 @@ import com.example.week6.dto.user.response.UserLoginResponseDto;
 import com.example.week6.entity.User;
 import com.example.week6.repository.UserRepository;
 import com.example.week6.security.JwtTokenProvider;
+import com.example.week6.validation.apiPayload.code.ErrorStatus;
+import com.example.week6.validation.apiPayload.exception.GeneralException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,8 +30,13 @@ public class UserService implements UserDetailsService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    // 🔑 회원가입 (비밀번호 암호화 후 저장)
+    // 회원가입 (비밀번호 암호화 후 저장)
     public void signup(UserSignupRequestDto requestDto) {
+
+        // 아이디 줃복 검사
+        if (userRepository.existsByUserId(requestDto.getUserId())) {
+            throw new GeneralException(ErrorStatus.USERNAME_ALREADY_EXISTS);
+        }
 
         User user = new User();
         user.setUserId(requestDto.getUserId());
@@ -40,7 +47,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    // 🔐 로그인 (ID/PW 검증 후 JWT 발급)
+    // 로그인 (ID/PW 검증 후 JWT 발급)
     public UserLoginResponseDto login(UserLoginRequestDto requestDto) {
         User user = userRepository.findByUserId(requestDto.getUserId())
                 .orElseThrow(() ->
